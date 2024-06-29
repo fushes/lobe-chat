@@ -28,22 +28,14 @@ FROM base AS builder
 
 WORKDIR /app
 
-ENV NEXT_PUBLIC_BASE_PATH=""
-
-# Sentry
-ENV NEXT_PUBLIC_SENTRY_DSN="" \
-    SENTRY_ORG="" \
-    SENTRY_PROJECT=""
-
-# Posthog
-ENV NEXT_PUBLIC_ANALYTICS_POSTHOG="" \
-    NEXT_PUBLIC_POSTHOG_HOST="" \
-    NEXT_PUBLIC_POSTHOG_KEY=""
-
-# Umami
-ENV NEXT_PUBLIC_ANALYTICS_UMAMI="" \
-    NEXT_PUBLIC_UMAMI_SCRIPT_URL="" \
-    NEXT_PUBLIC_UMAMI_WEBSITE_ID=""
+ENV NEXT_PUBLIC_BASE_PATH="" \
+    NEXT_PUBLIC_SERVICE_MODE=server \
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuMzM3OTI0Lnh5eiQ \
+    NEXT_PUBLIC_S3_DOMAIN=https://lobechat.337924.xyz/lobechat \
+    KEY_VAULTS_SECRET=jgwsK58dspyVQoIf8/M3IIHl1h8LYYce3YNXeLpy6uk= \
+    DATABASE_URL=postgres://lobechat:yrFAbDhSTdMNZ2A2@192.168.0.101:5432/lobechat \
+    CLERK_WEBHOOK_SECRET=whsec_jPOfPvrlmDmSQmAP1e/ebKuyi/MBlKrb \
+    DATABASE_DRIVER=node
 
 # Node
 ENV NODE_OPTIONS="--max-old-space-size=8192"
@@ -84,40 +76,19 @@ ENV HOSTNAME="0.0.0.0" \
 
 # General Variables
 ENV ACCESS_CODE="" \
+    NEXT_PUBLIC_SERVICE_MODE=server \
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuMzM3OTI0Lnh5eiQ \
+    NEXT_PUBLIC_S3_DOMAIN=https://lobechat.337924.xyz/lobechat \
+    KEY_VAULTS_SECRET=jgwsK58dspyVQoIf8/M3IIHl1h8LYYce3YNXeLpy6uk= \
+    DATABASE_URL=postgres://lobechat:yrFAbDhSTdMNZ2A2@192.168.0.101:5432/lobechat \
+    CLERK_WEBHOOK_SECRET=whsec_jPOfPvrlmDmSQmAP1e/ebKuyi/MBlKrb \
+    DATABASE_DRIVER=node \
     API_KEY_SELECT_MODE=""
 
 # Model Variables
 ENV \
-    # Anthropic
-    ANTHROPIC_API_KEY="" \
-    # Azure OpenAI
-    AZURE_API_KEY="" AZURE_API_VERSION="" USE_AZURE_OPENAI="" \
-    # DeepSeek
-    DEEPSEEK_API_KEY="" \
-    # Google
-    GOOGLE_API_KEY="" \
-    # Minimax
-    MINIMAX_API_KEY="" \
-    # Mistral
-    MISTRAL_API_KEY="" \
-    # Moonshot
-    MOONSHOT_API_KEY="" \
-    # Ollama
-    OLLAMA_MODEL_LIST="" OLLAMA_PROXY_URL="" \
     # OpenAI
     OPENAI_API_KEY="" OPENAI_MODEL_LIST="" OPENAI_PROXY_URL="" \
-    # OpenRouter
-    OPENROUTER_API_KEY="" OPENROUTER_MODEL_LIST="" \
-    # Perplexity
-    PERPLEXITY_API_KEY="" \
-    # Qwen
-    QWEN_API_KEY="" \
-    # TogetherAI
-    TOGETHERAI_API_KEY="" \
-    # 01.AI
-    ZEROONE_API_KEY="" \
-    # Zhipu
-    ZHIPU_API_KEY=""
 
 USER nextjs
 
