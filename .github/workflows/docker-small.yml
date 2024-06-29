@@ -1,4 +1,4 @@
-name: Publish other Docker Image
+name: Publish small Docker Image
 
 on:
   workflow_dispatch:
