@@ -85,11 +85,6 @@ ENV ACCESS_CODE="" \
     DATABASE_DRIVER=node \
     API_KEY_SELECT_MODE=""
 
-# Model Variables
-ENV \
-    # OpenAI
-    OPENAI_API_KEY="" OPENAI_MODEL_LIST="" OPENAI_PROXY_URL="" \
-
 USER nextjs
 
 EXPOSE 3210/tcp
