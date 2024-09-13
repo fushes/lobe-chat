@@ -430,16 +430,16 @@ class ChatService {
       }
 
       return [
-        { text: m.content, type: 'text' },
         ...imageList.map(
           (i) => ({ image_url: { detail: 'auto', url: i.url }, type: 'image_url' }) as const,
         ),
         ...fileList.map(
           (i) => ({ 
             file_url: { url: i.url }, 
-            type: i.fileType
+            type: "file"
           }) as const,
         ),
+        { text: m.content, type: 'text' },
       ] as UserMessageContentPart[];
     };
 
