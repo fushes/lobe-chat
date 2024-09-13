@@ -492,7 +492,7 @@ export const chatMessage: StateCreator<
     let fileChunks: MessageSemanticSearchChunk[] | undefined;
     let ragQueryId;
     // go into RAG flow if there is ragQuery flag
-    if (params?.ragQuery) {
+    if (false) {
       // 1. get the relative chunks from semantic search
       const { chunks, queryId } = await get().internal_retrieveChunks(
         userMessageId,
