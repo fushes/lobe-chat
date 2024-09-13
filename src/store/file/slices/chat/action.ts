@@ -95,7 +95,7 @@ export const createFileSlice: StateCreator<
     }
   },
 
-  uploadChatFiles: async (rawFiles) => {
+  uploadChatFiles: async (rawFiles, enableChunking = false) => {
     const { dispatchChatUploadFileList, startAsyncTask } = get();
     // 0. skip file in blacklist
     const files = rawFiles.filter((file) => !FILE_UPLOAD_BLACKLIST.includes(file.name));
@@ -139,7 +139,7 @@ export const createFileSlice: StateCreator<
               error === UPLOAD_NETWORK_ERROR
                 ? t('upload.networkError', { ns: 'error' })
                 : // or the error from the server
-                  typeof error === 'string'
+                typeof error === 'string'
                   ? error
                   : t('upload.unknownError', { ns: 'error', reason: (error as Error).message }),
             message: t('upload.uploadFailed', { ns: 'error' }),
@@ -153,52 +153,54 @@ export const createFileSlice: StateCreator<
       // image don't need to be chunked and embedding
       if (file.type.startsWith('image')) return;
 
-      // 3. auto chunk and embedding
-      dispatchChatUploadFileList({
-        id: fileResult.id,
-        type: 'updateFile',
-        // make the taks empty to hint the user that the task is starting but not triggered
-        value: { tasks: {} },
-      });
+      if (enableChunking) {
+        // 3. auto chunk and embedding
+        dispatchChatUploadFileList({
+          id: fileResult.id,
+          type: 'updateFile',
+          // make the taks empty to hint the user that the task is starting but not triggered
+          value: { tasks: {} },
+        });
 
-      await startAsyncTask(
-        fileResult.id,
-        async (id) => {
-          const data = await ragService.createParseFileTask(id);
-          if (!data || !data.id) throw new Error('failed to createParseFileTask');
+        await startAsyncTask(
+          fileResult.id,
+          async (id) => {
+            const data = await ragService.createParseFileTask(id);
+            if (!data || !data.id) throw new Error('failed to createParseFileTask');
 
-          // run the assignment
-          useAgentStore
-            .getState()
-            .addFilesToAgent([id], false)
-            .then(() => {
-              // trigger the tip if it's the first time
-              if (!preferenceSelectors.shouldTriggerFileInKnowledgeBaseTip(useUserStore.getState()))
-                return;
+            // run the assignment
+            useAgentStore
+              .getState()
+              .addFilesToAgent([id], false)
+              .then(() => {
+                // trigger the tip if it's the first time
+                if (!preferenceSelectors.shouldTriggerFileInKnowledgeBaseTip(useUserStore.getState()))
+                  return;
 
-              userService.updateGuide({ uploadFileInKnowledgeBase: true });
-            });
+                userService.updateGuide({ uploadFileInKnowledgeBase: true });
+              });
 
-          return data.id;
-        },
+            return data.id;
+          },
 
-        (fileItem) => {
-          dispatchChatUploadFileList({
-            id: fileResult.id,
-            type: 'updateFile',
-            value: {
-              tasks: {
-                chunkCount: fileItem.chunkCount,
-                chunkingError: fileItem.chunkingError,
-                chunkingStatus: fileItem.chunkingStatus,
-                embeddingError: fileItem.embeddingError,
-                embeddingStatus: fileItem.embeddingStatus,
-                finishEmbedding: fileItem.finishEmbedding,
+          (fileItem) => {
+            dispatchChatUploadFileList({
+              id: fileResult.id,
+              type: 'updateFile',
+              value: {
+                tasks: {
+                  chunkCount: fileItem.chunkCount,
+                  chunkingError: fileItem.chunkingError,
+                  chunkingStatus: fileItem.chunkingStatus,
+                  embeddingError: fileItem.embeddingError,
+                  embeddingStatus: fileItem.embeddingStatus,
+                  finishEmbedding: fileItem.finishEmbedding,
+                },
               },
-            },
-          });
-        },
-      );
+            });
+          },
+        );
+      }
     });
 
     await Promise.all(pools);
