@@ -417,7 +417,9 @@ class ChatService {
 
       const imageList = m.imageList;
 
-      if (imageList.length === 0) return m.content;
+      const fileList = m.fileList;
+
+      if (imageList.length === 0 || fileList?.length === 0) return m.content;
 
       const canUploadFile = modelProviderSelectors.isModelEnabledUpload(model)(
         useUserStore.getState(),
@@ -431,6 +433,12 @@ class ChatService {
         { text: m.content, type: 'text' },
         ...imageList.map(
           (i) => ({ image_url: { detail: 'auto', url: i.url }, type: 'image_url' }) as const,
+        ),
+        ...(Array.isArray(fileList) ? fileList : []).map(
+          (i) => ({ 
+            file_url: { detail: 'auto', url: i.url }, 
+            type: i.fileType
+          }) as const,
         ),
       ] as UserMessageContentPart[];
     };
