@@ -489,40 +489,7 @@ export const chatMessage: StateCreator<
 
     const { model, provider } = getAgentConfig();
 
-    let fileChunks: MessageSemanticSearchChunk[] | undefined;
-    let ragQueryId;
-    // go into RAG flow if there is ragQuery flag
-    if (false) {
-      // 1. get the relative chunks from semantic search
-      const { chunks, queryId } = await get().internal_retrieveChunks(
-        userMessageId,
-        params?.ragQuery,
-        // should skip the last content
-        messages.map((m) => m.content).slice(0, messages.length - 1),
-      );
-
-      ragQueryId = queryId;
-
-      console.log('召回 chunks', chunks);
-
-      // 2. build the retrieve context messages
-      const retrieveContext = chainAnswerWithContext({
-        context: chunks.map((c) => c.text as string),
-        question: params?.ragQuery,
-        knowledge: getAgentKnowledge().map((knowledge) => knowledge.name),
-      });
-
-      // 3. add the retrieve context messages to the messages history
-      if (retrieveContext.messages && retrieveContext.messages?.length > 0) {
-        // remove the last message due to the query is in the retrieveContext
-        messages.pop();
-        retrieveContext.messages?.forEach((m) => messages.push(m as ChatMessage));
-      }
-
-      fileChunks = chunks.map((c) => ({ id: c.id, similarity: c.similarity }));
-    }
-
-    // 2. Add an empty message to place the AI response
+    // Add an empty message to place the AI response
     const assistantMessage: CreateMessageParams = {
       role: 'assistant',
       content: LOADING_FLAT,
@@ -532,8 +499,6 @@ export const chatMessage: StateCreator<
       parentId: userMessageId,
       sessionId: get().activeId,
       topicId: activeTopicId, // if there is activeTopicId，then add it to topicId
-      fileChunks,
-      ragQueryId,
     };
 
     const assistantId = await get().internal_createMessage(assistantMessage);
