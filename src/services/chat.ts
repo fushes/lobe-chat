@@ -413,11 +413,13 @@ class ChatService {
     // for the models with visual ability, add image url to content
     // refs: https://platform.openai.com/docs/guides/vision/quick-start
     const getContent = (m: ChatMessage) => {
-      if (!m.imageList) return m.content;
+      if (!m.imageList ||!m.fileList) return m.content;
 
       const imageList = m.imageList;
 
       const fileList = m.fileList;
+
+      console.log(fileList);
 
       if (imageList.length === 0 || fileList?.length === 0) return m.content;
 
@@ -434,9 +436,9 @@ class ChatService {
         ...imageList.map(
           (i) => ({ image_url: { detail: 'auto', url: i.url }, type: 'image_url' }) as const,
         ),
-        ...(Array.isArray(fileList) ? fileList : []).map(
+        ...fileList.map(
           (i) => ({ 
-            file_url: { detail: 'auto', url: i.url }, 
+            file_url: { url: i.url }, 
             type: i.fileType
           }) as const,
         ),
