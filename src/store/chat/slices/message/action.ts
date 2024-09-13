@@ -7,7 +7,6 @@ import { template } from 'lodash-es';
 import { SWRResponse, mutate } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
-import { chainAnswerWithContext } from '@/chains/answerWithContext';
 import { LOADING_FLAT, MESSAGE_CANCEL_FLAT } from '@/const/message';
 import { TraceEventType, TraceNameMap } from '@/const/trace';
 import { isServerMode } from '@/const/version';
@@ -29,7 +28,6 @@ import {
   CreateMessageParams,
   MessageToolCall,
 } from '@/types/message';
-import { MessageSemanticSearchChunk } from '@/types/rag';
 import { TraceEventPayloads } from '@/types/trace';
 import { setNamespace } from '@/utils/storeDebug';
 import { nanoid } from '@/utils/uuid';
@@ -188,7 +186,6 @@ export interface ChatMessageAction extends ChatRAGAction {
 
 const getAgentConfig = () => agentSelectors.currentAgentConfig(useAgentStore.getState());
 const getAgentChatConfig = () => agentSelectors.currentAgentChatConfig(useAgentStore.getState());
-const getAgentKnowledge = () => agentSelectors.currentEnabledKnowledge(useAgentStore.getState());
 
 export const chatMessage: StateCreator<
   ChatStore,
