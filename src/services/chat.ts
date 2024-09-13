@@ -413,15 +413,13 @@ class ChatService {
     // for the models with visual ability, add image url to content
     // refs: https://platform.openai.com/docs/guides/vision/quick-start
     const getContent = (m: ChatMessage) => {
-      if (!m.imageList ||!m.fileList) return m.content;
+      if (!m.imageList || !m.fileList) return m.content;
 
       const imageList = m.imageList;
 
       const fileList = m.fileList;
 
-      console.log(fileList);
-
-      if (imageList.length === 0 || fileList?.length === 0) return m.content;
+      if (fileList.length === 0 && imageList.length === 0) return m.content;
 
       const canUploadFile = modelProviderSelectors.isModelEnabledUpload(model)(
         useUserStore.getState(),
